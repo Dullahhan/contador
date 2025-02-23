@@ -6,322 +6,100 @@
     <title>Impresiones Yani</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            background: radial-gradient(circle at center, #0f1419, #000000);
-            color: #e0f7fa;
-            font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-            position: relative;
+            height: 100vh;
+            margin: 0;
         }
-
         .container {
-            background: rgba(10, 15, 25, 0.9);
-            padding: 50px;
-            border-radius: 25px;
-            box-shadow: 0 0 40px rgba(0, 229, 255, 0.3), inset 0 0 20px rgba(0, 229, 255, 0.1);
             text-align: center;
-            width: 450px;
-            position: relative;
-            border: 2px solid rgba(0, 229, 255, 0.4);
-            backdrop-filter: blur(8px);
-            z-index: 2;
-            animation: holoFloat 5s ease-in-out infinite;
-        }
-
-        h1 {
-            font-size: 36px;
-            margin-bottom: 40px;
-            color: #00e5ff;
-            text-shadow: 0 0 20px rgba(0, 229, 255, 0.9), 0 0 40px rgba(0, 229, 255, 0.6);
-            letter-spacing: 3px;
-            position: relative;
-            animation: holoText 2s infinite alternate;
-        }
-
-        h1::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            width: 60%;
-            height: 2px;
-            background: linear-gradient(to right, transparent, #00e5ff, transparent);
-            transform: translateX(-50%);
-            animation: scanLine 3s infinite;
-        }
-
-        .counter {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            padding: 25px;
-            background: rgba(5, 10, 20, 0.7);
-            border-radius: 15px;
-            box-shadow: 0 0 25px rgba(0, 229, 255, 0.2), inset 0 0 10px rgba(0, 229, 255, 0.1);
-        }
-
-        .time-block {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 15px;
-            background: linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(10, 15, 25, 0.8));
+            background-color: #1a1a1a;
+            padding: 20px;
             border-radius: 10px;
-            transition: all 0.5s ease;
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
         }
-
-        .time-block::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0, 229, 255, 0.2), transparent);
-            opacity: 0;
-            transition: opacity 0.5s ease;
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #fff;
         }
-
-        .time-block:hover::before {
-            opacity: 1;
+        .timer {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
         }
-
-        .time-block:hover {
-            transform: translateY(-8px) scale(1.08);
-            box-shadow: 0 10px 20px rgba(0, 229, 255, 0.5);
+        .time-block {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 5px;
+            min-width: 60px;
         }
-
-        .time-wrapper {
-            position: relative;
-            height: 60px;
-            overflow: hidden;
-        }
-
-        .time {
-            font-size: 52px;
-            font-weight: 700;
-            color: #00e5ff;
-            text-shadow: 0 0 15px #00e5ff, 0 0 30px rgba(0, 229, 255, 0.7);
+        .time-block span {
             display: block;
-            line-height: 60px;
-            transition: transform 0.4s ease-out;
+            font-size: 32px;
+            font-weight: bold;
+            color: #1da1f2; /* Azul inspirado en X */
         }
-
-        .label {
-            font-size: 16px;
-            color: #b0bec5;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            opacity: 0.9;
-            text-shadow: 0 0 5px rgba(0, 229, 255, 0.3);
-        }
-
-        .bg-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .holo-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, rgba(0, 229, 255, 0.05), transparent);
-            z-index: 1;
-            pointer-events: none;
-            animation: shimmer 6s infinite;
-        }
-
-        /* Animaciones */
-        @keyframes holoFloat {
-            0%, 100% { transform: translateY(0) rotateX(2deg); }
-            50% { transform: translateY(-15px) rotateX(-2deg); }
-        }
-
-        @keyframes holoText {
-            0% { text-shadow: 0 0 15px #00e5ff, 0 0 30px #00e5ff; }
-            100% { text-shadow: 0 0 25px #00e5ff, 0 0 50px #00e5ff, 0 0 60px #00e5ff; }
-        }
-
-        @keyframes scanLine {
-            0%, 100% { width: 60%; opacity: 0.5; }
-            50% { width: 80%; opacity: 1; }
-        }
-
-        @keyframes holoPulse {
-            0%, 100% { text-shadow: 0 0 10px #00e5ff, 0 0 20px #00e5ff; }
-            50% { text-shadow: 0 0 20px #00e5ff, 0 0 40px #00e5ff, 0 0 50px #00e5ff; }
-        }
-
-        @keyframes shimmer {
-            0%, 100% { opacity: 0.05; }
-            50% { opacity: 0.15; }
+        .time-block label {
+            font-size: 14px;
+            color: #aaa;
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <canvas class="bg-canvas" id="particleCanvas"></canvas>
-    <div class="holo-overlay"></div>
     <div class="container">
         <h1>MUY PRONTO</h1>
-        <div class="counter">
+        <div class="timer">
             <div class="time-block">
-                <div class="time-wrapper">
-                    <span class="time" id="days">00</span>
-                </div>
-                <span class="label">Días</span>
+                <span id="days">00</span>
+                <label>Días</label>
             </div>
             <div class="time-block">
-                <div class="time-wrapper">
-                    <span class="time" id="hours">00</span>
-                </div>
-                <span class="label">Horas</span>
+                <span id="hours">00</span>
+                <label>Horas</label>
             </div>
             <div class="time-block">
-                <div class="time-wrapper">
-                    <span class="time" id="minutes">00</span>
-                </div>
-                <span class="label">Minutos</span>
+                <span id="minutes">00</span>
+                <label>Minutos</label>
             </div>
             <div class="time-block">
-                <div class="time-wrapper">
-                    <span class="time" id="seconds">00</span>
-                </div>
-                <span class="label">Segundos</span>
+                <span id="seconds">00</span>
+                <label>Segundos</label>
             </div>
         </div>
     </div>
 
     <script>
-        // Contador con efecto de rueda
+        // Fecha objetivo: 30 días desde hoy (23 de febrero de 2025)
         const countDownDate = new Date("March 25, 2025 00:00:00").getTime();
-        let prevValues = { days: null, hours: null, minutes: null, seconds: null };
 
-        const updateCounter = () => {
+        // Actualizar el contador cada segundo
+        const x = setInterval(function() {
             const now = new Date().getTime();
             const distance = countDownDate - now;
 
+            // Calcular días, horas, minutos y segundos
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            const elements = {
-                days: document.getElementById("days"),
-                hours: document.getElementById("hours"),
-                minutes: document.getElementById("minutes"),
-                seconds: document.getElementById("seconds")
-            };
+            // Mostrar los valores en pantalla
+            document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+            document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+            document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+            document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
 
-            const newValues = {
-                days: String(days).padStart(2, '0'),
-                hours: String(hours).padStart(2, '0'),
-                minutes: String(minutes).padStart(2, '0'),
-                seconds: String(seconds).padStart(2, '0')
-            };
-
-            // Animar solo si el valor cambió
-            for (let key in newValues) {
-                if (prevValues[key] !== null && prevValues[key] !== newValues[key]) {
-                    const el = elements[key];
-                    el.style.transform = "translateY(-60px)"; // Mover hacia arriba
-                    setTimeout(() => {
-                        el.style.transition = "none";
-                        el.innerText = newValues[key];
-                        el.style.transform = "translateY(60px)"; // Preparar para bajar
-                        setTimeout(() => {
-                            el.style.transition = "transform 0.4s ease-out";
-                            el.style.transform = "translateY(0)"; // Volver a posición
-                        }, 20);
-                    }, 400);
-                } else if (prevValues[key] === null) {
-                    elements[key].innerText = newValues[key];
-                }
-            }
-
-            prevValues = { ...newValues };
-
+            // Si la cuenta regresiva termina
             if (distance < 0) {
                 clearInterval(x);
-                document.querySelector(".counter").innerHTML = `
-                    <span style="color: #00e5ff; text-shadow: 0 0 20px #00e5ff; font-size: 24px; animation: fadeIn 1s ease-in;">
-                        ¡ACTIVACIÓN COMPLETA!
-                    </span>`;
+                document.querySelector(".container").innerHTML = "<h1>¡Tiempo terminado!</h1>";
             }
-        };
-
-        updateCounter(); // Ejecutar inmediatamente
-        const x = setInterval(updateCounter, 1000);
-
-        // Partículas interactivas
-        const canvas = document.getElementById("particleCanvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const particles = [];
-        const particleCount = 100;
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 1;
-                this.speedX = Math.random() * 0.5 - 0.25;
-                this.speedY = Math.random() * 0.5 - 0.25;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-            }
-            draw() {
-                ctx.fillStyle = "rgba(0, 229, 255, 0.5)";
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-
-        canvas.addEventListener("mousemove", (e) => {
-            particles.forEach(p => {
-                const dx = e.x - p.x;
-                const dy = e.y - p.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 100) {
-                    p.x -= dx * 0.05;
-                    p.y -= dy * 0.05;
-                }
-            });
-        });
+        }, 1000);
     </script>
 </body>
 </html>
