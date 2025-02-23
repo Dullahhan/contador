@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador Regresivo Futurista Global</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+            color: #ffffff;
+            font-family: 'Orbitron', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            background: rgba(10, 10, 10, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(29, 155, 240, 0.3);
+            text-align: center;
+            width: 350px;
+            position: relative;
+            border: 1px solid #1d9bf0;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 25px;
+            color: #1d9bf0;
+            text-shadow: 0 0 10px rgba(29, 155, 240, 0.7);
+            animation: neonGlow 1.5s ease-in-out infinite alternate;
+        }
+
+        .counter {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background: #000000;
+            border-radius: 10px;
+            box-shadow: inset 0 0 10px rgba(29, 155, 240, 0.2);
+        }
+
+        .time-block {
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        .time-block:hover {
+            transform: scale(1.1);
+        }
+
+        .time {
+            font-size: 40px;
+            font-weight: bold;
+            color: #00eaff;
+            text-shadow: 0 0 5px #00eaff, 0 0 15px #00eaff;
+            animation: pulse 2s infinite;
+        }
+
+        .label {
+            font-size: 12px;
+            color: #71767b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @keyframes neonGlow {
+            from { text-shadow: 0 0 5px #1d9bf0, 0 0 10px #1d9bf0, 0 0 15px #1d9bf0; }
+            to { text-shadow: 0 0 10px #1d9bf0, 0 0 20px #1d9bf0, 0 0 30px #1d9bf0; }
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 5px #00eaff, 0 0 10px #00eaff; }
+            50% { text-shadow: 0 0 10px #00eaff, 0 0 20px #00eaff, 0 0 30px #00eaff; }
+            100% { text-shadow: 0 0 5px #00eaff, 0 0 10px #00eaff; }
+        }
+
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(29, 155, 240, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+            animation: bgPulse 10s infinite;
+            z-index: -1;
+        }
+
+        @keyframes bgPulse {
+            0% { transform: scale(1); opacity: 0.1; }
+            50% { transform: scale(1.2); opacity: 0.2; }
+            100% { transform: scale(1); opacity: 0.1; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="container">
+        <h1>MUY PRONTO</h1>
+        <div class="counter">
+            <div class="time-block">
+                <span class="time" id="days">00</span>
+                <span class="label">Días</span>
+            </div>
+            <div class="time-block">
+                <span class="time" id="hours">00</span>
+                <span class="label">Horas</span>
+            </div>
+            <div class="time-block">
+                <span class="time" id="minutes">00</span>
+                <span class="label">Minutos</span>
+            </div>
+            <div class="time-block">
+                <span class="time" id="seconds">00</span>
+                <span class="label">Segundos</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fecha objetivo fija (ejemplo: 30 días desde el 23 de febrero de 2025)
+        const countDownDate = new Date("March 25, 2025 00:00:00").getTime();
+
+        // Actualizar el contador cada segundo
+        const x = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = countDownDate - now;
+
+            // Cálculos para días, horas, minutos y segundos
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Mostrar los valores
+            document.getElementById("days").innerText = days.toString().padStart(2, '0');
+            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
+
+            // Cuando el contador llegue a cero
+            if (distance < 0) {
+                clearInterval(x);
+                document.querySelector(".counter").innerHTML = "¡Tiempo terminado!";
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
