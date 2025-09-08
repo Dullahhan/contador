@@ -1,212 +1,150 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Users Database from Google Sheets</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-        tr:hover {
-            background-color: #f8f9fa;
-        }
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-        }
-        .error {
-            color: #dc3545;
-            padding: 10px;
-            background-color: #f8d7da;
-            border-radius: 4px;
-            margin: 10px 0;
-        }
-        .btn {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
-        }
-        .btn:hover {
-            background-color: #0056b3;
-        }
-        .btn-secondary {
-            background-color: #6c757d;
-        }
-        .btn-secondary:hover {
-            background-color: #545b62;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Users Database from Google Sheets</h1>
-        
-        <button class="btn" onclick="loadUsers()">📋 Cargar Usuarios</button>
-        <button class="btn btn-secondary" onclick="clearData()">🗑️ Limpiar</button>
-        
-        <div id="loading" class="loading">Cargando datos desde Google Sheets...</div>
-        <div id="error" class="error" style="display: none;"></div>
-        
-        <div id="users-container" style="display: none;">
-            <h2>Total de usuarios: <span id="count">0</span></h2>
-            <div id="table-container"></div>
-        </div>
-    </div>
+<html>
+  <head>
+    <title>Sheets API Quickstart</title>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <p>Sheets API Quickstart</p>
 
-    <script>
-        // URL de tu Apps Script Web App (REEMPLAZA ESTO)
-        const SCRIPT_URL = 'https://script.googleapis.com/v1/scripts/AKfycbw2L0HBR-BLG9yo4COEz_QHo96y8ucY1Xd6u2hzQcbpllaZBC8He6SO08syc_JVmhGyuQ:run';
+    <!--Add buttons to initiate auth sequence and sign out-->
+    <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
+    <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
 
-        // Elementos del DOM
-        const loadingElement = document.getElementById('loading');
-        const errorElement = document.getElementById('error');
-        const usersContainer = document.getElementById('users-container');
-        const countElement = document.getElementById('count');
-        const tableContainer = document.getElementById('table-container');
+    <pre id="content" style="white-space: pre-wrap;"></pre>
 
-        async function loadUsers() {
-            showLoading();
-            hideError();
-            hideUsers();
+    <script type="text/javascript">
+      /* exported gapiLoaded */
+      /* exported gisLoaded */
+      /* exported handleAuthClick */
+      /* exported handleSignoutClick */
 
-            try {
-                console.log('Cargando datos desde:', SCRIPT_URL);
-                
-                const response = await fetch(SCRIPT_URL);
-                
-                if (!response.ok) {
-                    throw new Error(`Error HTTP: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                console.log('Datos recibidos:', data);
-                
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                
-                displayUsers(data);
-                
-            } catch (error) {
-                showError('Error al cargar datos: ' + error.message);
-                console.error('Error:', error);
-            } finally {
-                hideLoading();
-            }
-        }
+      // TODO(developer): Set to client ID and API key from the Developer Console
+      const CLIENT_ID = '457930753781-od0i9a153h46qv17vjcra8rbj3kqq53f.apps.googleusercontent.com';
+      const API_KEY = 'AIzaSyDPM2UJKGFou4mDAXUCa65wmnvAOOdR4eE';
 
-        function displayUsers(data) {
-            if (!data.data || data.data.length === 0) {
-                tableContainer.innerHTML = '<p>No hay usuarios registrados</p>';
-                showUsers();
-                return;
-            }
-            
-            // Crear tabla
-            let tableHTML = '<table><thead><tr>';
-            
-            // Encabezados (usamos las keys del primer objeto)
-            const headers = Object.keys(data.data[0]);
-            headers.forEach(header => {
-                tableHTML += `<th>${capitalizeFirst(header)}</th>`;
-            });
-            tableHTML += '</tr></thead><tbody>';
-            
-            // Filas de datos
-            data.data.forEach(user => {
-                tableHTML += '<tr>';
-                headers.forEach(header => {
-                    const value = user[header] || '';
-                    tableHTML += `<td>${formatValue(value)}</td>`;
-                });
-                tableHTML += '</tr>';
-            });
-            
-            tableHTML += '</tbody></table>';
-            
-            tableContainer.innerHTML = tableHTML;
-            countElement.textContent = data.data.length;
-            showUsers();
-        }
+      // Discovery doc URL for APIs used by the quickstart
+      const DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4';
 
-        function formatValue(value) {
-            if (value === null || value === undefined) return '';
-            if (typeof value === 'boolean') return value ? 'Sí' : 'No';
-            return value.toString();
-        }
+      // Authorization scopes required by the API; multiple scopes can be
+      // included, separated by spaces.
+      const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
 
-        function capitalizeFirst(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
-        }
+      let tokenClient;
+      let gapiInited = false;
+      let gisInited = false;
 
-        function clearData() {
-            tableContainer.innerHTML = '';
-            countElement.textContent = '0';
-            hideUsers();
-            hideError();
-        }
+      document.getElementById('authorize_button').style.visibility = 'hidden';
+      document.getElementById('signout_button').style.visibility = 'hidden';
 
-        // Helper functions para mostrar/ocultar elementos
-        function showLoading() {
-            loadingElement.style.display = 'block';
-        }
+      /**
+       * Callback after api.js is loaded.
+       */
+      function gapiLoaded() {
+        gapi.load('client', initializeGapiClient);
+      }
 
-        function hideLoading() {
-            loadingElement.style.display = 'none';
-        }
-
-        function showError(message) {
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
-        }
-
-        function hideError() {
-            errorElement.style.display = 'none';
-        }
-
-        function showUsers() {
-            usersContainer.style.display = 'block';
-        }
-
-        function hideUsers() {
-            usersContainer.style.display = 'none';
-        }
-
-        // Cargar datos automáticamente al abrir la página
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Página cargada, lista para cargar datos');
-            // loadUsers(); // Descomenta si quieres carga automática
+      /**
+       * Callback after the API client is loaded. Loads the
+       * discovery doc to initialize the API.
+       */
+      async function initializeGapiClient() {
+        await gapi.client.init({
+          apiKey: API_KEY,
+          discoveryDocs: [DISCOVERY_DOC],
         });
+        gapiInited = true;
+        maybeEnableButtons();
+      }
+
+      /**
+       * Callback after Google Identity Services are loaded.
+       */
+      function gisLoaded() {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: '', // defined later
+        });
+        gisInited = true;
+        maybeEnableButtons();
+      }
+
+      /**
+       * Enables user interaction after all libraries are loaded.
+       */
+      function maybeEnableButtons() {
+        if (gapiInited && gisInited) {
+          document.getElementById('authorize_button').style.visibility = 'visible';
+        }
+      }
+
+      /**
+       *  Sign in the user upon button click.
+       */
+      function handleAuthClick() {
+        tokenClient.callback = async (resp) => {
+          if (resp.error !== undefined) {
+            throw (resp);
+          }
+          document.getElementById('signout_button').style.visibility = 'visible';
+          document.getElementById('authorize_button').innerText = 'Refresh';
+          await listMajors();
+        };
+
+        if (gapi.client.getToken() === null) {
+          // Prompt the user to select a Google Account and ask for consent to share their data
+          // when establishing a new session.
+          tokenClient.requestAccessToken({prompt: 'consent'});
+        } else {
+          // Skip display of account chooser and consent dialog for an existing session.
+          tokenClient.requestAccessToken({prompt: ''});
+        }
+      }
+
+      /**
+       *  Sign out the user upon button click.
+       */
+      function handleSignoutClick() {
+        const token = gapi.client.getToken();
+        if (token !== null) {
+          google.accounts.oauth2.revoke(token.access_token);
+          gapi.client.setToken('');
+          document.getElementById('content').innerText = '';
+          document.getElementById('authorize_button').innerText = 'Authorize';
+          document.getElementById('signout_button').style.visibility = 'hidden';
+        }
+      }
+
+      /**
+       * Print the names and majors of students in a sample spreadsheet:
+       * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
+       */
+      async function listMajors() {
+        let response;
+        try {
+          // Fetch first 10 files
+          response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: '1uATjPAQGdT9Ss-Fn-tOAIHGjuOUlMZxlB_z7gfdCRW4',
+            range: 'Class Data!A2:E',
+          });
+        } catch (err) {
+          document.getElementById('content').innerText = err.message;
+          return;
+        }
+        const range = response.result;
+        if (!range || !range.values || range.values.length == 0) {
+          document.getElementById('content').innerText = 'No values found.';
+          return;
+        }
+        // Flatten to string to display
+        const output = range.values.reduce(
+            (str, row) => `${str}${row[0]}, ${row[4]}\n`,
+            'Name, Major:\n');
+        document.getElementById('content').innerText = output;
+      }
     </script>
-</body>
+    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+  </body>
 </html>
